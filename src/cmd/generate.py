@@ -5,7 +5,7 @@ import cli.log
 
 @cli.log.LoggingApp
 def generate(app):
-    print("starting generation: {}".format(app.params))
+    print("starting generation with input: {}".format(app.params))
 
 
 generate.add_param("-f", "--fpga-model", help="the fpga model", default="default", type=str, )
