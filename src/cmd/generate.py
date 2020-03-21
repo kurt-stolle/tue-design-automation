@@ -2,12 +2,12 @@
 
 import cli.log
 import generator
+import operations
 
 
 @cli.log.LoggingApp
 def generate(app):
     try:
-
         print("starting generation with params: ", app.params)
 
     # Start with our starting point: a new implementation based on our parameters
@@ -16,16 +16,18 @@ def generate(app):
         print("CURRENT COST: {0}".format(impl.cum_exec_time()))
         print("ITERATION 0:\n{0}".format(impl.print(indent=1)))
 
-        # Split the loop by unrolling the 5th loop
-        loop = impl.nextOperation
+        # Test the unroll function by running it on the first operation in the chain, which we know is the subclass
+        # operations.ForLoop
+        inner_loop, inner_loop_parent = generator.find_inner_loop(impl)  # impl starts with a chain of ForLoop
 
-        split = generator.loop_unroll(loop.nextOperation)
+        print("Inner loop {0}".format(inner_loop))
 
-        loop.nextOperation = split
+        unrolled_loop = generator.loop_unroll(inner_loop)
+
+        inner_loop_parent.nextOperation = unrolled_loop  # Replace the body of the parent loop with an unrolled version
 
         print("CURRENT COST: {0}".format(impl.cum_exec_time()))
         print("ITERATION 1:\n{0}".format(impl.print(indent=1)))
-
 
     except Exception as e:
         print(e)

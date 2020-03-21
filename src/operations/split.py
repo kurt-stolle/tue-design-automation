@@ -4,7 +4,7 @@ from operations import Operation, tabs
 
 
 class Split(Operation):
-    """The split operation parallelizes a number of operations, the execution time is the time of the longest path"""
+    """The split operation parallelize a number of operations, the execution time is the time of the longest path"""
 
     ops: [Operation] = []
 
