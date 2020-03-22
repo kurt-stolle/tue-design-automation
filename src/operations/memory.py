@@ -10,7 +10,7 @@ class Assign(Operation):
         self.name = name
 
     def print(self, indent=0) -> str:
-        return tabs(indent) + self.name + " = " + self.nextOperation.print(indent=indent) + ";"
+        return tabs(indent) + self.name + " = " + self.next_operation.print(indent=indent)
 
 
 class Fetch(Operation):
@@ -22,4 +22,4 @@ class Fetch(Operation):
         self.name = name
 
     def print(self, **kwargs) -> str:
-        return self.name + (self.nextOperation.print(**kwargs) if self.nextOperation is not None else "")
+        return self.name + (self.next_operation.print(**kwargs) if self.next_operation is not None else "")

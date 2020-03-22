@@ -9,7 +9,7 @@ class Split(Operation):
     ops: [Operation] = []
 
     def __init__(self, *args):
-        self.ops = args
+        self.ops = list(args)
 
     @property
     def exec_time(self) -> int:
@@ -19,9 +19,16 @@ class Split(Operation):
 
         return int(t)
 
+    @property
+    def next_operation(self):
+        return None
+
     def print(self, indent=0) -> str:
         res = []
         for i, op in enumerate(self.ops):
-            res[i] = op.print(indent=indent + 1)
+            res.append(op.print(indent=indent + 1))
 
         return "{0}__split__{{\n{1}\n{0}}}".format(tabs(indent), ",\n".join(res))
+
+    def then(self, next_operation: Operation) -> Operation:
+        raise NameError("attempted to chain a single event after a split")  # a split cannot have a next operation

@@ -14,12 +14,14 @@ class Operation(object):
     """An operation, e.g. "For", "Assign" and "Multiply". This essentially creates a way of "functionally
     programming" the for-loop of the CNN, making optimization easier"""
 
-    nextOperation: Operation = None  # the next operation in the chain
-    exec_time = 1
+    next_operation: Operation = None  # the next operation in the chain
+    prev_operation: Operation = None  # the previous operation in the chain
+
+    exec_time = 0
 
     def print(self, **kwargs) -> str:
-        if self.nextOperation is not None:
-            return self.nextOperation.print(**kwargs)
+        if self.next_operation is not None:
+            return self.next_operation.print(**kwargs)
         else:
             raise ValueError("cannot print an empty operations chain")
 
@@ -28,10 +30,15 @@ class Operation(object):
 
         :returns memory used, execution time"""
 
-        return self.exec_time + (self.nextOperation.cum_exec_time() if self.nextOperation is not None else 0)
+        return self.exec_time + (self.next_operation.cum_exec_time() if self.next_operation is not None else 0)
 
-    def then(self, nextOperation: any) -> Operation:
+    def then(self, next_operation: Operation) -> Operation:
         """set the next operation to be performed after this operation is done"""
-        self.nextOperation = nextOperation
+
+        # Double link
+        self.next_operation = next_operation
+        next_operation.prev_operation = self
 
         return self
+
+

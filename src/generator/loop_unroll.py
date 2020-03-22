@@ -1,35 +1,36 @@
+from copy import deepcopy
+
 import operations
 
 
-def find_inner_loop(start: operations.Operation) -> [operations.ForLoop, operations.Operation]:
-    """Search a chain of Operations for the innermost loop in a chain of for loops.
-    This is the starting point of a "unroll" optimization.
+def optim_loop_unroll(impl: operations.ForLoop) -> operations.Operation:
+    """Perform the loop unrolling optimization: split a chain of ForLoops's bodies into a parallel version
 
-    @:param start The stating point of the chain. The next child must be a ForLoop
-    """
+    :param impl The implementation chain on which to perform the optimization
+    :returns An optimized implementation"""
 
-    if start.nextOperation is None:
-        raise AssertionError("next operation is not defined")
-    elif not isinstance(start, operations.ForLoop):
-        raise TypeError("next operation is not a ForLoop")
+    # Create a copy of impl
+    impl = deepcopy(impl)
 
-    last_for = start
-    cur_op = start
+    # Walk the implementation searching for a ForLoop with an assignment or split body
+    target = impl
     while True:
-        next_op = cur_op.nextOperation
-        if next_op is None:
-            return last_for, cur_op  # If the next operation is not defined, last ForLoop is the innermost For loop
-        elif isinstance(next_op, operations.ForLoop):
-            last_for = next_op  # If the next operation is a ForLoop, then remember it
+        if target.next_operation is None:
+            raise EOFError("reached the end of the implementation chain before an unroll target could be found")
+        elif isinstance(target, operations.ForLoop) and (
+                isinstance(target.next_operation, operations.Assign)
+                or isinstance(target.next_operation, operations.Split)):
+            break  # break once we find a ForLoop which has an assigning statement or split as next operation
 
-        cur_op = next_op  # Reiterate for the next operation in the chain
+        target = target.next_operation  # move one operation further in the chain
 
-
-def loop_unroll(loop: operations.ForLoop) -> operations.Split:
-    """Perform the loop unrolling optimization: split a chain of ForLoops's bodies into a parallel version"""
+    # Unroll the loop, putting the body of the loop in parallel
     split = operations.Split()
+    for i in range(target.start, target.end):
+        split.ops.append(target.next_operation)  # Todo set the instance variables
 
-    # TODO split the loop operation based on its parameters
-    split.ops = [loop]
+    # Replace the target with the new split
+    target.prev_operation.then(split)
 
-    return split
+    # Return the new implementation
+    return impl

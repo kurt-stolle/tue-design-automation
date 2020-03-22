@@ -10,9 +10,9 @@ class Multiply(Operation):
         pass
 
     def print(self, **kwargs) -> str:
-        assert self.nextOperation is not None
+        assert self.next_operation is not None
 
-        return " * " + self.nextOperation.print(**kwargs)
+        return " * " + self.next_operation.print(**kwargs)
 
 
 class Add(Operation):
@@ -24,6 +24,6 @@ class Add(Operation):
         pass
 
     def print(self, **kwargs) -> str:
-        assert self.nextOperation is not None
+        assert self.next_operation is not None
 
-        return " + " + self.nextOperation.print(**kwargs)
+        return " + " + self.next_operation.print(**kwargs)

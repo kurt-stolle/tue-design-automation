@@ -10,24 +10,25 @@ def generate(app):
     try:
         print("starting generation with params: ", app.params)
 
-    # Start with our starting point: a new implementation based on our parameters
+        # Start with our starting point: a new implementation based on our parameters
         impl = generator.new_implementation(app.params.input_size, app.params.kernel_size)
 
         print("CURRENT COST: {0}".format(impl.cum_exec_time()))
         print("ITERATION 0:\n{0}".format(impl.print(indent=1)))
 
-        # Test the unroll function by running it on the first operation in the chain, which we know is the subclass
-        # operations.ForLoop
-        inner_loop, inner_loop_parent = generator.find_inner_loop(impl)  # impl starts with a chain of ForLoop
+        # Keep iterating until we can no longer unroll due to hardware limitations
+        for i in range(1, 3):
+            new_impl = generator.optim_loop_unroll(impl)
 
-        print("Inner loop {0}".format(inner_loop))
+            print("CURRENT COST: {0}".format(new_impl.cum_exec_time()))
+            print("ITERATION {1}:\n{0}".format(new_impl.print(indent=1), i))
 
-        unrolled_loop = generator.loop_unroll(inner_loop)
+            # Check whether the new implementation works on the current hardware
+            if False:
+                pass
 
-        inner_loop_parent.nextOperation = unrolled_loop  # Replace the body of the parent loop with an unrolled version
-
-        print("CURRENT COST: {0}".format(impl.cum_exec_time()))
-        print("ITERATION 1:\n{0}".format(impl.print(indent=1)))
+            # Set the current implementation to the new implementation we just created
+            impl = new_impl
 
     except Exception as e:
         print(e)
