@@ -4,3 +4,4 @@ from operations.operation import *
 from operations.value import *
 from operations.arithmetic import *
 from operations.split import *
+from operations.variable import *

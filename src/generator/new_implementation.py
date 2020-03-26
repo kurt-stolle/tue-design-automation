@@ -3,8 +3,8 @@ import operations
 
 def new_implementation(input_size: int,
                        kernel_size: int,
-                       input_channels: int = 4,
-                       n_filters: int = 7,
+                       channels: int = 4,
+                       filters: int = 7,
                        stride: int = 2) -> operations.Operation:
     """Create a new convolution (cross-correlation) loop in the most basic form. Essentially, this is the starting
     point of any generator."""
@@ -20,14 +20,22 @@ def new_implementation(input_size: int,
     # going into our system. The output size is thus: output_size = (input_size-kernel_size)/stride + 2
     output_size = int((input_size - kernel_size) / stride + 2)
 
+    # Define the variables
+    var_n_filter = operations.Variable("n_filter")
+    var_S_row = operations.Variable("S_row")
+    var_S_col = operations.Variable("S_col")
+    var_I_chan = operations.Variable("I_chan")
+    var_K_row = operations.Variable("K_row")
+    var_K_col = operations.Variable("K_col")
+
     # Define a root operation which will be the result of this method
     root_operation = operations.Operation()
 
     # Define our loops
+    loop_n_filters = operations.ForLoop(0, filters, 1, iterator_name="n_filter")
     loop_output_rows = operations.ForLoop(0, output_size, 1, iterator_name="S_row")
     loop_output_cols = operations.ForLoop(0, output_size, 1, iterator_name="S_col")
-    loop_n_filters = operations.ForLoop(0, n_filters, 1, iterator_name="n_filter")
-    loop_input_chan = operations.ForLoop(0, input_channels, 1, iterator_name="I_chan")
+    loop_input_chan = operations.ForLoop(0, channels, 1, iterator_name="I_chan")
     loop_kernel_rows = operations.ForLoop(0, kernel_size, 1, iterator_name="K_row")
     loop_kernel_cols = operations.ForLoop(0, kernel_size, 1, iterator_name="K_col")
 
