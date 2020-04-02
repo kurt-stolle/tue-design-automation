@@ -23,10 +23,10 @@ class Split(Operation):
     def next_operation(self):
         return None
 
-    def print(self, indent=0) -> str:
+    def print_pseudo(self, indent=0) -> str:
         res = []
         for i, op in enumerate(self.ops):
-            res.append(op.print(indent=indent + 1))
+            res.append(op.print_pseudo(indent=indent + 1))
 
         return "{0}__split__{{\n{1}\n{0}}}".format(tabs(indent), ",\n".join(res))
 

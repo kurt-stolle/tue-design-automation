@@ -5,7 +5,7 @@ import cli.log
 
 @cli.log.LoggingApp
 def validate(app):
-    print("starting validation with input: {}".format(app.params))
+    print_pseudo("starting validation with input: {}".format(app.params))
 
 
 

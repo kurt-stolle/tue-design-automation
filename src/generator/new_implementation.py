@@ -5,20 +5,18 @@ def new_implementation(input_size: int,
                        kernel_size: int,
                        channels: int = 4,
                        filters: int = 7,
-                       stride: int = 2) -> operations.Operation:
+                       stride: int = 1) -> operations.Operation:
     """Create a new convolution (cross-correlation) loop in the most basic form. Essentially, this is the starting
     point of any generator."""
 
+
+
     # Todo implement the stride
-    if stride != 2:
-        raise AssertionError("stride must be equal to 4 (other values not yet implemented)")
+    if stride != 1:
+        raise AssertionError("stride must be equal to 1 (other values not yet implemented)")
 
     # The kernel size must be an odd number (1, 3, etc)
     assert (kernel_size % 2) == 1
-
-    # We assume that we don't need to add any padding (if padding is desired, then the data should be pre-padded before
-    # going into our system. The output size is thus: output_size = (input_size-kernel_size)/stride + 2
-    output_size = int((input_size - kernel_size) / stride + 2)
 
     # Define the variables
     var_n_filter = operations.Variable("n_filter")
@@ -28,16 +26,29 @@ def new_implementation(input_size: int,
     var_K_row = operations.Variable("K_row")
     var_K_col = operations.Variable("K_col")
 
+    # Define definitions
+    # We assume that we don't need to add any padding (if padding is desired, then the data should be pre-padded before
+    # going into our system. The output size is thus: output_size = (input_size-kernel_size)/stride + 2
+    def_output_size = operations.Definition("output_size", int((input_size - kernel_size) / stride + 1))
+    def_kernel_size = operations.Definition("kernel_size", kernel_size)
+    def_channels = operations.Definition("channels", channels)
+    def_filters = operations.Definition("filters", filters)
+
     # Define a root operation which will be the result of this method
-    root_operation = operations.Operation()
+    root_operation = operations.Root([
+        def_output_size,
+        def_kernel_size,
+        def_channels,
+        def_filters
+    ])
 
     # Define our loops
-    loop_n_filters = operations.ForLoop(0, filters, 1, iterator=var_n_filter)
-    loop_output_rows = operations.ForLoop(0, output_size, 1, iterator=var_S_row)
-    loop_output_cols = operations.ForLoop(0, output_size, 1, iterator=var_S_col)
-    loop_input_chan = operations.ForLoop(0, channels, 1, iterator=var_I_chan)
-    loop_kernel_rows = operations.ForLoop(0, kernel_size, 1, iterator=var_K_row)
-    loop_kernel_cols = operations.ForLoop(0, kernel_size, 1, iterator=var_K_col)
+    loop_n_filters = operations.ForLoop(0, def_filters, 1, iterator=var_n_filter)
+    loop_output_rows = operations.ForLoop(0, def_output_size, 1, iterator=var_S_row)
+    loop_output_cols = operations.ForLoop(0, def_output_size, 1, iterator=var_S_col)
+    loop_input_chan = operations.ForLoop(0, def_channels, 1, iterator=var_I_chan)
+    loop_kernel_rows = operations.ForLoop(0, def_kernel_size, 1, iterator=var_K_row)
+    loop_kernel_cols = operations.ForLoop(0, def_kernel_size, 1, iterator=var_K_col)
 
     # Add our newly created loops to the body of the root_operation in sequence
     root_operation.then(

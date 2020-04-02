@@ -9,10 +9,10 @@ class Multiply(Operation):
     def __init__(self):
         pass
 
-    def print(self, **kwargs) -> str:
+    def print_pseudo(self, **kwargs) -> str:
         assert self.next_operation is not None
 
-        return " * " + self.next_operation.print(**kwargs)
+        return " * " + self.next_operation.print_pseudo(**kwargs)
 
 
 class Add(Operation):
@@ -23,7 +23,7 @@ class Add(Operation):
     def __init__(self):
         pass
 
-    def print(self, **kwargs) -> str:
+    def print_pseudo(self, **kwargs) -> str:
         assert self.next_operation is not None
 
-        return " + " + self.next_operation.print(**kwargs)
+        return " + " + self.next_operation.print_pseudo(**kwargs)

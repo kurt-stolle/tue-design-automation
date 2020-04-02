@@ -8,20 +8,22 @@ import operations
 @cli.log.LoggingApp
 def generate(app):
     try:
-        print("starting generation with params: ", app.params)
+        print("Starting generation with params: ", app.params)
 
         # Start with our starting point: a new implementation based on our parameters
         impl = generator.new_implementation(app.params.input_size, app.params.channels, app.params.kernel_size, app.params.filters)
 
+        print("Starting synthesis algorithm")
+
         print("CURRENT COST: {0}".format(impl.cum_exec_time()))
-        print("ITERATION 0:\n{0}".format(impl.print(indent=1)))
+        print("ITERATION 0:\n{0}".format(impl.print_pseudo(indent=1)))
 
         # Keep iterating until we can no longer unroll due to hardware limitations
         for i in range(1, 3):
             new_impl = generator.optim_loop_unroll(impl)
 
             print("CURRENT COST: {0}".format(new_impl.cum_exec_time()))
-            print("ITERATION {1}:\n{0}".format(new_impl.print(indent=1), i))
+            print("ITERATION {1}:\n{0}".format(new_impl.print_pseudo(indent=1), i))
 
             # Check whether the new implementation works on the current hardware
             if False:

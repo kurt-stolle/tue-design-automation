@@ -9,8 +9,8 @@ class Assign(Operation):
     def __init__(self, name):
         self.name = name
 
-    def print(self, indent=0) -> str:
-        return tabs(indent) + self.name + " = " + self.next_operation.print(indent=indent)
+    def print_pseudo(self, indent=0) -> str:
+        return tabs(indent) + self.name + " = " + self.next_operation.print_pseudo(indent=indent)
 
 
 class Fetch(Operation):
@@ -21,5 +21,5 @@ class Fetch(Operation):
     def __init__(self, name: str):
         self.name = name
 
-    def print(self, **kwargs) -> str:
-        return self.name + (self.next_operation.print(**kwargs) if self.next_operation is not None else "")
+    def print_pseudo(self, **kwargs) -> str:
+        return self.name + (self.next_operation.print_pseudo(**kwargs) if self.next_operation is not None else "")

@@ -19,11 +19,11 @@ class Operation(object):
 
     exec_time = 0
 
-    def print(self, **kwargs) -> str:
-        if self.next_operation is not None:
-            return self.next_operation.print(**kwargs)
-        else:
-            raise ValueError("cannot print an empty operations chain")
+    def print_pseudo(self, **kwargs) -> str:
+        raise ValueError("cannot execute print_pseudo on the Operation class: a child class must define this method")
+
+    def print_verilog(selfs, **kwargs) -> str:
+        raise ValueError("cannot execute print_verilog on the Operation class: a child class must define this method")
 
     def cum_exec_time(self) -> float:
         """quantify the cumulative performance of this operation and it's next operations, allowing for optimization.

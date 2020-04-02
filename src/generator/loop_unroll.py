@@ -26,7 +26,7 @@ def optim_loop_unroll(impl: operations.ForLoop) -> operations.Operation:
 
     # Unroll the loop, putting the body of the loop in parallel
     split = operations.Split()
-    for i in range(target.start, target.end):
+    for i in range(target.start.value, target.end.value):
         split.ops.append(target.next_operation)  # Todo set the instance variables
 
     # Replace the target with the new split
