@@ -1,13 +1,14 @@
 from abc import ABC
 
 from operations.operation import Operation, tabs
+from operations.variable import Variable
 
 
 class ForLoop(Operation, ABC):
     """A "For" Operation, assumes we only do int-based numerical for loops, e.g. from i=0 to i >= 10"""
 
-    def __init__(self, start: int, end: int, increment: int, iterator_name: str = "i"):
-        self.iterator_name = iterator_name
+    def __init__(self, start: int, end: int, increment: int, iterator: Variable):
+        self.iterator = iterator
         self.start = start
         self.end = end
         self.increment = increment
@@ -15,7 +16,7 @@ class ForLoop(Operation, ABC):
     def print(self, indent=0) -> str:
         return "{0}for({1} = {2}; {1} < {3}; {1} += {4})\n{5}".format(
             tabs(indent),
-            self.iterator_name,
+            self.iterator.print(),
             self.start,
             self.end,
             self.increment,

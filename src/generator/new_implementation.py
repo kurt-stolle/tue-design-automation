@@ -32,12 +32,12 @@ def new_implementation(input_size: int,
     root_operation = operations.Operation()
 
     # Define our loops
-    loop_n_filters = operations.ForLoop(0, filters, 1, iterator_name="n_filter")
-    loop_output_rows = operations.ForLoop(0, output_size, 1, iterator_name="S_row")
-    loop_output_cols = operations.ForLoop(0, output_size, 1, iterator_name="S_col")
-    loop_input_chan = operations.ForLoop(0, channels, 1, iterator_name="I_chan")
-    loop_kernel_rows = operations.ForLoop(0, kernel_size, 1, iterator_name="K_row")
-    loop_kernel_cols = operations.ForLoop(0, kernel_size, 1, iterator_name="K_col")
+    loop_n_filters = operations.ForLoop(0, filters, 1, iterator=var_n_filter)
+    loop_output_rows = operations.ForLoop(0, output_size, 1, iterator=var_S_row)
+    loop_output_cols = operations.ForLoop(0, output_size, 1, iterator=var_S_col)
+    loop_input_chan = operations.ForLoop(0, channels, 1, iterator=var_I_chan)
+    loop_kernel_rows = operations.ForLoop(0, kernel_size, 1, iterator=var_K_row)
+    loop_kernel_cols = operations.ForLoop(0, kernel_size, 1, iterator=var_K_col)
 
     # Add our newly created loops to the body of the root_operation in sequence
     root_operation.then(

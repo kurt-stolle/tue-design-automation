@@ -37,7 +37,7 @@ def generate(app):
     exit(0)
 
 
-generate.add_param("-f", "--fpga-model", help="the fpga model", default="default", type=str)
+generate.add_param("-m", "--fpga-model", help="the fpga model", default="default", type=str)
 generate.add_param("-i", "--input-size", help="the convolution layer input size", default=16, type=int)
 generate.add_param("-c", "--channels", help="the convolution layer input filters amount", default=3, type=int)
 generate.add_param("-k", "--kernel-size", help="the convolution kernel size", default=5, type=int)
