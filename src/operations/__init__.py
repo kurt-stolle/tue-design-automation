@@ -27,6 +27,8 @@ module Convolution (
 	input rst,
 	output reg done
 );
+
+
     """
 
     def __init__(self, global_definitions=None):
@@ -40,11 +42,11 @@ module Convolution (
         for g in self.global_definitions:
             globs.append("{0} = {1}".format(g.print_pseudo(), g.value))
 
-        return "Module ({0}) {{\n{1}\n}}".format(', '.join(globs), self.next_operation.print_pseudo(**kwargs))
+        return self._pseudo_tpl.format(', '.join(globs), self.next_operation.print_pseudo(**kwargs))
 
     def print_verilog(self, **kwargs) -> str:
         globs = []
-        for g in self.global_definitions():
+        for g in self.global_definitions:
             globs.append("{0} {1}".format(g.print_verilog(), g.value))
 
-        return _verilog_tpl.format('\n')
+        return self._verilog_tpl.format('\n'.join(globs))

@@ -15,17 +15,22 @@ def generate(app):
 
         print("Starting synthesis algorithm")
 
-        print("CURRENT COST: {0}".format(impl.cum_exec_time()))
-        print("ITERATION 0:\n{0}".format(impl.print_pseudo(indent=1)))
+        print("\n-- Iteration 0 --")
+        print("Cost: {0}".format(impl.cum_exec_time()))
+        print("Pseudo code:\n{0}".format(impl.print_pseudo(indent=1)))
+        print("Verilog code:\n{0}".format(impl.print_verilog()))
 
         # Keep iterating until we can no longer unroll due to hardware limitations
         for i in range(1, 3):
             new_impl = generator.optim_loop_unroll(impl)
 
-            print("CURRENT COST: {0}".format(new_impl.cum_exec_time()))
-            print("ITERATION {1}:\n{0}".format(new_impl.print_pseudo(indent=1), i))
+            print("\n-- Iteration {} --".format(i))
+            print("Cost: {0}".format(new_impl.cum_exec_time()))
+            print("Pseudo code:\n{0}".format(new_impl.print_pseudo(indent=1)))
+            print("Verilog code:\n{0}".format(new_impl.print_verilog()))
 
-            # Check whether the new implementation works on the current hardware
+
+        # Check whether the new implementation works on the current hardware
             if False:
                 pass
 
