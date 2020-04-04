@@ -85,7 +85,11 @@ class Operation(object):
 
         :returns memory used, execution time"""
 
-        return self.exec_time + (self.next_operation.cum_exec_time() if self.next_operation is not None else 0)
+        t = self.exec_time
+        if self.next_operation is not None:
+            t += self.next_operation.cum_exec_time()
+
+        return t
 
     def then(self, next_operation: Operation) -> Operation:
         """set the next operation to be performed after this operation is done"""

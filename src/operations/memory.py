@@ -5,7 +5,7 @@ from operations.operation import Operation, tabs
 class Assign(Operation):
     """Load the result of the next operation into the previous operation"""
 
-    exec_time = 500
+    exec_time = 4
 
     def __init__(self, var: Variable):
         self.var = var
@@ -20,7 +20,7 @@ class Assign(Operation):
 class Fetch(Operation):
     """Fetches an operation from memory"""
 
-    exec_time = 250
+    exec_time = 2
 
     def __init__(self, var: Variable):
         self.var = var

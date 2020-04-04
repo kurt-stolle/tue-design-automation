@@ -42,7 +42,7 @@ def generate(input_size: int = 32, channels: int = 3, kernel_size: int = 3, filt
     print_implementation(0, impl)
 
     # Keep iterating until we can no longer unroll due to hardware limitations
-    for i in range(1, 3):
+    for i in range(1, 4):
         new_impl = generator.optim_loop_unroll(impl)  # unroll loops
 
         print_implementation(i, new_impl)  # output the current implementation

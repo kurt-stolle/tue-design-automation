@@ -18,7 +18,7 @@ class Multiply(Operation):
 class Add(Operation):
     """An addition operation"""
 
-    exec_time = 2
+    exec_time = 1
 
     def __init__(self):
         pass
