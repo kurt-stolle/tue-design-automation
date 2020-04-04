@@ -5,18 +5,30 @@ from operations.arithmetic import *
 from operations.split import *
 from operations.variable import *
 
-_verilog_tpl = """
+class End(Operation):
+    def __init__(self):
+        pass
 
-"""
+    def print_pseudo(self, **kwargs) -> str:
+        return ""
 
+    def print_verilog(selfs, **kwargs) -> str:
+        return ""
 
 class Root(Operation):
     """the Root operation performs initialization of the module"""
 
     _pseudo_tpl = """
-Module({0}) {{
+// Compile-time definitions
+{0}
+
+// Variable initialization
 {1}
-}}
+
+// Cross-correlation function
+{2}
+
+// End pseudocode
     """
 
     _verilog_tpl = """
@@ -28,25 +40,57 @@ module Convolution (
 	output reg done
 );
 
-
+    always @ (posedge clk) begin
+		if(rst) begin
+			enable <= 1'b0;
+			colCount_image <= 0;
+			rowCount_image <= 0;
+			writeCount_image <= 0;
+			done <= 1'b0;
+		end
+		else begin
+		
+		end
+	end
+	
+endmodule
     """
 
-    def __init__(self, global_definitions=None):
-        if global_definitions is None:
-            global_definitions = []
+    def __init__(self, output_size: Definition, kernel_size: Definition, channels: Definition, filters: Definition):
+        self.output_size = output_size
+        self.kernel_size = kernel_size
+        self.channels = channels
+        self.filters = filters
 
-        self.global_definitions = global_definitions
+    def ctime_vars(self):
+        return [self.output_size, self.kernel_size,  self.channels, self.filters]
 
     def print_pseudo(self, **kwargs) -> str:
+        # compile-time variables, const statements
         globs = []
-        for g in self.global_definitions:
-            globs.append("{0} = {1}".format(g.print_pseudo(), g.value))
+        for g in self.ctime_vars():
+            globs.append("#define {0} {1};".format(g.print_pseudo(), g.value))
+        globs = '\n'.join(globs)
 
-        return self._pseudo_tpl.format(', '.join(globs), self.next_operation.print_pseudo(**kwargs))
+        # variable initialization
+        vars = []
+        for v in self.next_operation.vars():
+            vars.append("int {0};".format(v.name))
+        vars = '\n'.join(vars)
+
+        # return pseudocode template
+        return self._pseudo_tpl.format(globs, vars, self.next_operation.print_pseudo(**kwargs))
 
     def print_verilog(self, **kwargs) -> str:
+        # Start with our global definitions (i.e. declare statements)
         globs = []
-        for g in self.global_definitions:
+        for g in self.ctime_vars():
             globs.append("{0} {1}".format(g.print_verilog(), g.value))
 
-        return self._verilog_tpl.format('\n'.join(globs))
+        globs = '\n'.join(globs)
+
+        # Loop iterators need to be defined
+
+
+
+        return self._verilog_tpl.format(globs)

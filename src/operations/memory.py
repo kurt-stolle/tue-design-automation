@@ -1,3 +1,4 @@
+from operations.variable import Variable
 from operations.operation import Operation, tabs
 
 
@@ -6,11 +7,14 @@ class Assign(Operation):
 
     exec_time = 500
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, var: Variable):
+        self.var = var
 
     def print_pseudo(self, indent=0) -> str:
-        return tabs(indent) + self.name + " = " + self.next_operation.print_pseudo(indent=indent)
+        return tabs(indent) + self.var.print_pseudo() + " = " + self.next_operation.print_pseudo(indent=indent)
+
+    def print_verilog(self, **kwargs) -> str:
+        return self.var.print_verilog() + " <= " + self.next_operation.print_verilog(**kwargs)
 
 
 class Fetch(Operation):
@@ -18,8 +22,8 @@ class Fetch(Operation):
 
     exec_time = 250
 
-    def __init__(self, name: str):
-        self.name = name
+    def __init__(self, var: Variable):
+        self.var = var
 
     def print_pseudo(self, **kwargs) -> str:
-        return self.name + (self.next_operation.print_pseudo(**kwargs) if self.next_operation is not None else "")
+        return self.var.print_pseudo() + self.next_operation.print_pseudo(**kwargs)

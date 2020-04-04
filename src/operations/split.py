@@ -23,12 +23,23 @@ class Split(Operation):
     def next_operation(self):
         return None
 
+    # implements Operation.sub
+    def sub(self, *args):
+        for op in self.ops:
+            op.sub(*args)
+
+    # implements Operation.vars
+    def vars(self):
+        l = []
+        for op in self.ops:
+            l.extend(op.vars())
+
     def print_pseudo(self, indent=0) -> str:
         res = []
         for i, op in enumerate(self.ops):
             res.append(op.print_pseudo(indent=indent + 1))
 
-        return "{0}__split__{{\n{1}\n{0}}}".format(tabs(indent), ",\n".join(res))
+        return "\n".join(res)
 
     def then(self, next_operation: Operation) -> Operation:
         raise NameError("attempted to chain a single event after a split")  # a split cannot have a next operation

@@ -27,7 +27,19 @@ def optim_loop_unroll(impl: operations.ForLoop) -> operations.Operation:
     # Unroll the loop, putting the body of the loop in parallel
     split = operations.Split()
     for i in range(target.start.value, target.end.value):
-        split.ops.append(target.next_operation)  # Todo set the instance variables
+        # make a copy of the branch
+        op = deepcopy(target.next_operation)
+
+        # substitute any instance of the interator variable with a literal
+        li = operations.Literal(i)
+        op.sub(target.var.name, li)
+
+        # check if the op is a Split, if so then flatten the split
+        if isinstance(op, operations.Split):
+            for sub_op in op.ops:
+                split.ops.append(sub_op)
+        else:
+            split.ops.append(op)  # Todo set the instance variables
 
     # Replace the target with the new split
     target.prev_operation.then(split)

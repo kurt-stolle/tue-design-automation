@@ -1,5 +1,9 @@
 from __future__ import annotations  # The operation class's annotations reference itself
 
+from typing import List
+
+from operations.variable import Literal, Variable
+
 
 def tabs(n: int):
     """returns n amount of 'tabs' (two spaces) for readability of the output"""
@@ -20,10 +24,42 @@ class Operation(object):
     exec_time = 0
 
     def print_pseudo(self, **kwargs) -> str:
-        raise ValueError("cannot execute print_pseudo on the Operation class: a child class must define this method")
+        raise NotImplementedError("cannot execute print_pseudo on the Operation class: a child class must define this method")
 
     def print_verilog(selfs, **kwargs) -> str:
-        raise ValueError("cannot execute print_verilog on the Operation class: a child class must define this method")
+        raise NotImplementedError("cannot execute print_verilog on the Operation class: a child class must define this method")
+
+    # Substitution
+    def sub(self, var_name: str, value: Literal):
+        try:
+            if self.var.name == var_name:
+                self.var = value
+                return
+
+            # A var may have a sub method too, like for Index. Make sure we propagate fully
+            self.var.sub(var_name, value)
+        except AttributeError:
+            pass
+
+        if self.next_operation is not None:
+            self.next_operation.sub(var_name, value)
+
+    # Find all variables - all are supposed global
+    def vars(self) -> List[Variable]:
+        """collect a list of all Variables in the list"""
+        l = []
+
+        try:
+            if isinstance(self.var, Variable):
+                l.append(self.var)
+
+            l.extend(self.next_operation.vars())
+        except AttributeError:
+            pass
+        except TypeError:
+            pass
+
+        return l
 
     def cum_exec_time(self) -> float:
         """quantify the cumulative performance of this operation and it's next operations, allowing for optimization.

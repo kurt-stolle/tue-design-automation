@@ -9,8 +9,6 @@ def new_implementation(input_size: int,
     """Create a new convolution (cross-correlation) loop in the most basic form. Essentially, this is the starting
     point of any generator."""
 
-
-
     # Todo implement the stride
     if stride != 1:
         raise AssertionError("stride must be equal to 1 (other values not yet implemented)")
@@ -35,20 +33,20 @@ def new_implementation(input_size: int,
     def_filters = operations.Definition("filters", filters)
 
     # Define a root operation which will be the result of this method
-    root_operation = operations.Root([
+    root_operation = operations.Root(
         def_output_size,
         def_kernel_size,
         def_channels,
         def_filters
-    ])
+    )
 
     # Define our loops
-    loop_n_filters = operations.ForLoop(0, def_filters, 1, iterator=var_n_filter)
-    loop_output_rows = operations.ForLoop(0, def_output_size, 1, iterator=var_S_row)
-    loop_output_cols = operations.ForLoop(0, def_output_size, 1, iterator=var_S_col)
-    loop_input_chan = operations.ForLoop(0, def_channels, 1, iterator=var_I_chan)
-    loop_kernel_rows = operations.ForLoop(0, def_kernel_size, 1, iterator=var_K_row)
-    loop_kernel_cols = operations.ForLoop(0, def_kernel_size, 1, iterator=var_K_col)
+    loop_n_filters = operations.ForLoop(0, def_filters, 1, var_n_filter)
+    loop_output_rows = operations.ForLoop(0, def_output_size, 1, var_S_row)
+    loop_output_cols = operations.ForLoop(0, def_output_size, 1, var_S_col)
+    loop_input_chan = operations.ForLoop(0, def_channels, 1, var_I_chan)
+    loop_kernel_rows = operations.ForLoop(0, def_kernel_size, 1, var_K_row)
+    loop_kernel_cols = operations.ForLoop(0, def_kernel_size, 1, var_K_col)
 
     # Add our newly created loops to the body of the root_operation in sequence
     root_operation.then(
@@ -67,14 +65,27 @@ def new_implementation(input_size: int,
 
     # Define the assignment operation - even though this is a matrix assignment,
     # we neglect the lookup times for the arrays
-    s_cur = "S[n_filter][S_row][S_col]"
+    S = operations.Variable("S")
+    I = operations.Variable("I")
+    K = operations.Variable("K")
 
-    assign_matrix_element = operations.Assign(s_cur).then(
-        operations.Fetch(s_cur).then(
+    # Index on variables S, I and K
+    S_idx = operations.Index(S, [
+    var_n_filter, "*", def_output_size, "^2", "+", var_S_row, "*", def_output_size, "+", var_S_col])
+
+    I_idx = operations.Index(I, [
+    var_I_chan, "*", def_output_size, "^2", "+", "(", var_S_row, "+", var_K_row, ")", "*", def_output_size, "+", "(",
+    var_S_col, "+", var_K_col, ")"])
+
+    K_idx = operations.Index(K, [var_K_row, "*", def_kernel_size, "+", var_K_col])
+
+    # Perform memory and arithmetic
+    assign_matrix_element = operations.Assign(S_idx).then(
+        operations.Fetch(S_idx).then(
             operations.Add().then(
-                operations.Fetch("I[I_chan][S_row+K_row][S_col+K_col]").then(
+                operations.Fetch(I_idx).then(
                     operations.Multiply().then(
-                        operations.Fetch("K[K_row][K_col]")
+                        operations.Fetch(K_idx).then(operations.End())
                     )
                 )
             )
