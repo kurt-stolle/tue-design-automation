@@ -31,6 +31,7 @@ def generate(input_size: int = 32, channels: int = 3, kernel_size: int = 3, filt
         # Set the current implementation to the new implementation we just created
         impl = new_impl
 
+    exit(0)
 
 if __name__ == "__main__":
     generate()

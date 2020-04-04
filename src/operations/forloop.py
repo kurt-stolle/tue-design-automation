@@ -32,6 +32,9 @@ class ForLoop(Operation, ABC):
             self.increment.print_pseudo(),
             self.next_operation.print_pseudo(indent=indent + 1) if self.next_operation is not None else "")
 
+    def print_verilog(selfs, **kwargs) -> str:
+        return ""
+
     def cum_exec_time(self) -> float:
         t = 0
         for i in range(self.start.value, self.end.value):

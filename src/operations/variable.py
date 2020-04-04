@@ -41,13 +41,16 @@ class Variable:
         return self.name
 
 
-class Index(Variable):
+class Index:
     """Index a variable"""
 
     def __init__(self, var: Variable, idx: list):
-        super().__init__(var.name)
-
+        self.var = var
         self.chain = idx
+
+    @property
+    def name(self) -> str:
+        return self.var.name
 
     # substitution in the chain, propagated from  Operation
     def sub(self, var_name: str, value: Literal):
@@ -67,11 +70,11 @@ class Index(Variable):
             except AttributeError:
                 idx += v
 
-        return super().print_pseudo() + "[" + idx + "]"
+        return self.var.print_pseudo() + "[" + idx + "]"
 
     def print_verilog(self) -> str:
         idx = ""
         for v in self.chain:
             idx += v.print_verilog() if v.print_pseudo is not None else v
 
-        return super().print_verilog() + "[" + "" + "]"
+        return self.var.print_verilog() + "[" + "" + "]"

@@ -2,7 +2,7 @@ from __future__ import annotations  # The operation class's annotations referenc
 
 from typing import List
 
-from operations.variable import Literal, Variable
+from operations.variable import *
 
 
 def tabs(n: int):
@@ -50,14 +50,16 @@ class Operation(object):
         l = []
 
         try:
+            if isinstance(self.var, Index):
+                l.append(self.var.var)
             if isinstance(self.var, Variable):
                 l.append(self.var)
-
-            l.extend(self.next_operation.vars())
         except AttributeError:
             pass
-        except TypeError:
-            pass
+
+        if self.next_operation is not None:
+            next = self.next_operation.vars()
+            l.extend(next)
 
         return l
 

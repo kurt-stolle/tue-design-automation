@@ -1,6 +1,6 @@
-import math
-
+from typing import List
 from operations import Operation, tabs
+from operations.variable import *
 
 
 class Split(Operation):
@@ -29,10 +29,10 @@ class Split(Operation):
             op.sub(*args)
 
     # implements Operation.vars
-    def vars(self):
-        l = []
-        for op in self.ops:
-            l.extend(op.vars())
+    def vars(self) -> List[Variable]:
+
+        # Fixme here we assume that all branches in a split contain exactly the same variables
+        return self.ops[0].vars()
 
     def print_pseudo(self, indent=0) -> str:
         res = []
