@@ -20,6 +20,7 @@ class End(Operation):
 class Root(Operation):
 	"""the Root operation performs initialization of the module"""
 
+	# PSEUDOCODE TEMPLATES
 	_pseudo_tpl = """// Compile-time definitions
 {0}
 
@@ -29,6 +30,7 @@ class Root(Operation):
 // Cross-correlation function
 {2}"""
 
+	# VERILOG TEMPLATES
 	_verilog_tpl = """// Compile-time definitions
 {}
 
@@ -36,8 +38,10 @@ class Root(Operation):
 module Convolution (input clk,	input rst,	output reg done);
 
     // Adders
+    {}
     
     // Multipliers
+    {}
     
     // Variable initialization
     {}
@@ -55,6 +59,36 @@ module Convolution (input clk,	input rst,	output reg done);
 	end
 	
 endmodule"""
+
+	_verilog_mul_tpl = """
+	wire [7:0] input_mul_{0}_I;
+	wire [7:0] input_mul_{0}_K;
+	wire [7:0] output_mul_{0};
+	wire done_mul_{0};
+	
+	Multiplier mul_{0}(
+		.clk(clk),
+		.enable(enable),
+		.input_I(input_mul_{0}_I),
+		.input_K(input_mul_{0}_K),
+		.output(output_mul_{0}),
+		.done(done_mul_{0})
+	);"""
+
+	_verilog_add_tpl = """
+	wire [7:0] input_add_{0}_I;
+	wire [7:0] input_add_{0}_K;
+	wire [7:0] output_add_{0};
+	wire done_add_{0};
+	
+	Adder mul_{0}(
+		.clk(clk),
+		.enable(enable),
+		.input_A(input_add_{0}_A),
+		.input_B(input_add_{0}_B),
+		.output(output_add_{0}),
+		.done(done_add_{0})
+	);"""
 
 	def __init__(self, output_size: Definition, kernel_size: Definition, channels: Definition, filters: Definition):
 		self.output_size = output_size
@@ -117,6 +151,18 @@ endmodule"""
 
 		globs = '\n'.join(globs)
 
+		# adders
+		adders = []
+		for i in range(0, self.count_additions()):
+			adders.append(self._verilog_add_tpl.format(i))
+		adders = '\n\t'.join(adders)
+
+		# multipliers
+		multipliers = []
+		for i in range(0, self.count_multiplications()):
+			multipliers.append(self._verilog_mul_tpl.format(i))
+		multipliers = '\n\t'.join(multipliers)
+
 		# variable initialization
 		vars_init = []
 		vars_reset = []
@@ -130,6 +176,8 @@ endmodule"""
 		# return verilog template
 		return self._verilog_tpl.format(
 			globs,
+			adders,
+			multipliers,
 			vars_init,
 			vars_reset,
 			self.next_operation.print_verilog()
