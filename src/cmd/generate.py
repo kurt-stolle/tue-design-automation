@@ -1,7 +1,36 @@
 #!/usr/bin/env python
 
 import generator
+import operations
 
+dbg_markdown = """
+---------------------------------------------------------------------------
+# Iteration {}
+- Cost:            {}
+- Memory accesses: {}
+- Multiplications: {}
+- Additions:       {}
+
+C-Style Pseudocode
+```
+{}
+```
+
+Verilog
+```
+{}
+```"""
+
+def print_implementation(i: int, impl: operations.Root):
+    print(dbg_markdown.format(
+        i,
+        impl.cum_exec_time(),
+        impl.count(lambda op: isinstance(op, operations.Assign) or isinstance(op, operations.Fetch)),
+        impl.count_multiplications(),
+        impl.count_additions(),
+        impl.print_pseudo(),
+        impl.print_verilog()
+    ))
 
 def generate(input_size: int = 32, channels: int = 3, kernel_size: int = 3, filters: int = 8):
     # Start with our starting point: a new implementation based on our parameters
@@ -10,19 +39,13 @@ def generate(input_size: int = 32, channels: int = 3, kernel_size: int = 3, filt
 
     print("Starting synthesis algorithm")
 
-    print("\n-- Iteration 0 --")
-    print("Cost: {0}".format(impl.cum_exec_time()))
-    print("Pseudo code:\n{0}".format(impl.print_pseudo(indent=1)))
-    print("Verilog code:\n{0}".format(impl.print_verilog()))
+    print_implementation(0, impl)
 
     # Keep iterating until we can no longer unroll due to hardware limitations
     for i in range(1, 3):
-        new_impl = generator.optim_loop_unroll(impl)
+        new_impl = generator.optim_loop_unroll(impl)  # unroll loops
 
-        print("\n-- Iteration {} --".format(i))
-        print("Cost: {0}".format(new_impl.cum_exec_time()))
-        print("Pseudo code:\n{0}".format(new_impl.print_pseudo(indent=1)))
-        print("Verilog code:\n{0}".format(new_impl.print_verilog()))
+        print_implementation(i, new_impl)  # output the current implementation
 
         # Check whether the new implementation works on the current hardware
         if False:

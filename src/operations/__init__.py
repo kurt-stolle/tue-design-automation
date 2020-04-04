@@ -82,6 +82,12 @@ endmodule"""
 
 		return res
 
+	def count_multiplications(self):
+		return self.count(lambda op: isinstance(op, Multiply))
+
+	def count_additions(self):
+		return self.count(lambda op: isinstance(op, Add))
+
 
 	def print_pseudo(self, **kwargs) -> str:
 		# compile-time variables, const statements

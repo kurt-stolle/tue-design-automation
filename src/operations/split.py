@@ -23,6 +23,14 @@ class Split(Operation):
     def next_operation(self):
         return None
 
+    # implements Operation.count - takes the cumulative
+    def count(self, fn) -> int:
+        c = 0
+        for op in self.ops:
+            c += op.count(fn)
+
+        return c
+
     # implements Operation.sub
     def sub(self, *args):
         for op in self.ops:

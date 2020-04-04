@@ -29,8 +29,25 @@ class Operation(object):
     def print_verilog(selfs, **kwargs) -> str:
         raise NotImplementedError("cannot execute print_verilog on the Operation class: a child class must define this method")
 
+    def walk(self):
+        """walk the chain of  operations in the next-direction"""
+        cursor = self.next_operation
+        while cursor is not None:
+            yield cursor
+            cursor = cursor.next_operation
+
+    def count(self, fn) -> int:
+        """count how many times an assertion can be made about the class in a chain of operations"""
+        ass = fn(self)
+
+        if self.next_operation is not None:
+            return (1 if ass else 0) + self.next_operation.count(fn)
+
+        return 1 if ass else 0
+
     # Substitution
     def sub(self, var_name: str, value: Literal):
+        """Substitute a Variable for a Literal"""
         try:
             if self.var.name == var_name:
                 self.var = value
