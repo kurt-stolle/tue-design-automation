@@ -2,8 +2,8 @@ import operations
 
 
 def new_implementation(input_size: int,
-                       kernel_size: int,
                        channels: int = 4,
+                       kernel_size: int = 3,
                        filters: int = 7,
                        stride: int = 1) -> operations.Operation:
     """Create a new convolution (cross-correlation) loop in the most basic form. Essentially, this is the starting
@@ -77,7 +77,7 @@ def new_implementation(input_size: int,
     var_I_chan, "*", def_output_size, "^2", "+", "(", var_S_row, "+", var_K_row, ")", "*", def_output_size, "+", "(",
     var_S_col, "+", var_K_col, ")"])
 
-    K_idx = operations.Index(K, [var_K_row, "*", def_kernel_size, "+", var_K_col])
+    K_idx = operations.Index(K, [var_n_filter, "*", def_kernel_size, "^2", "+", var_K_row, "*", def_kernel_size, "+", var_K_col])
 
     # Perform memory and arithmetic
     assign_matrix_element = operations.Assign(S_idx).then(
