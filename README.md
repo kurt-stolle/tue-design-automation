@@ -21,5 +21,7 @@ The solution consists of following modules (see the `src` directory):
 ## Autors
 
 K.H.W. Stolle <k.h.w.stolle@student.tue.nl>
+
 M. van Dijke <m.v.dijke@student.tue.nl>
+
 S.L. Kamp <s.l.kamp@student.tue.nl>
