@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import argparse
 
 import generator
 import operations
@@ -49,15 +50,33 @@ def generate(input_size: int = 32, channels: int = 3, kernel_size: int = 3, filt
         print_implementation(i, new_impl, print_verilog, print_pseudo)  # output the current implementation
 
         # Check whether the new implementation works on the current hardware
-        if False:
-            pass
+        # if impl.count(lambda op: isinstance(op, operations.Assign) or isinstance(op, operations.Fetch)) > available_concurrency:
+        #     return
 
         # Set the current implementation to the new implementation we just created
         impl = new_impl
 
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Generate the verilog implementation',
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-i', "--input", metavar="INPUT_SIZE", type=int, required=True)
+    parser.add_argument('-c', "--channels", metavar="CHANNELS", type=int, default=3)
+    parser.add_argument('-k', '--kernel', metavar='KERNEL_SIZE', type=int, default=3,
+                        help='Size (width and height) of the convolution kernel')
+    parser.add_argument('-f', '--filters', metavar='FILTERS', type=int, default=8,
+                        help='Batch size')
+    parser.add_argument('-a', '--concurrency', metavar='AVAILABLE_CONCURRENCY', type=int, default=100,
+                        help='Available concurrency')
+
+    return parser.parse_args()
+
+
 import timeit
 if __name__ == "__main__":
+    args = get_args()
+
     print(timeit.timeit(
-        lambda: generate(16, channels=3, kernel_size=3, filters=16, available_concurrency=200, print_verilog=False, print_pseudo=True),
+        lambda: generate(args.input, args.channels, args.kernel, args.filters, args.concurrency, print_verilog=True, print_pseudo=True),
         number=1
     ))
